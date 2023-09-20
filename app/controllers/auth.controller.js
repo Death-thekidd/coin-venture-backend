@@ -39,32 +39,32 @@ exports.signup = async (req, res) => {
 			totalEarnings: 0,
 			wallets: [
 				{
-					name: "PerfectMoney",
-					address: address.perfectMoney,
-					available: 0,
-					pending: 0,
-				},
-				{
 					name: "Payeer",
-					address: address.payeer,
+					address: address?.payeer,
 					available: 0,
 					pending: 0,
 				},
 				{
 					name: "Bitcoin",
-					address: address.bitcoin,
+					address: address?.bitcoin,
 					available: 0,
 					pending: 0,
 				},
 				{
 					name: "Litecoin",
-					address: address.litecoin,
+					address: address?.litecoin,
 					available: 0,
 					pending: 0,
 				},
 				{
 					name: "Ethereum",
-					address: address.ethereum,
+					address: address?.ethereum,
+					available: 0,
+					pending: 0,
+				},
+				{
+					name: "Usdt trc",
+					address: address?.usdt_trc,
 					available: 0,
 					pending: 0,
 				},
