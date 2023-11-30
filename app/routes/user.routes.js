@@ -2,6 +2,10 @@ const { authJwt } = require("../middlewares");
 const controller = require("../controllers/user.controller");
 const config = require("../config/auth.config");
 const db = require("../models");
+const { default: handlerStarter } = require("../crons/addProfitStarter");
+const { default: handlerPro } = require("../crons/addProfitPro");
+const { default: handlerBlackDiamond } = require("../crons/addProfitBlackDiamond");
+const { default: handlerVip } = require("../crons/addProfitVip");
 const User = db.user;
 const Role = db.role;
 const Plan = db.plan;
@@ -33,9 +37,8 @@ module.exports = function (app) {
 		const users = await User.find({});
 		res.json(users);
 	});
-
 	app.post("/api/test/deposit", async (req, res) => {
-		const { username, amount, walletName } = req.body;
+		const { username, amount, walletName, plan } = req.body;
 
 		const user = await User.findOne({ username });
 		if (!user) return res.status(404).json({ message: "User not found" });
@@ -49,6 +52,7 @@ module.exports = function (app) {
 		user.deposits.push({
 			amount: amount,
 			walletName: walletName,
+			plan: plan,
 			status: "pending",
 		});
 		await user.save();
@@ -65,6 +69,77 @@ module.exports = function (app) {
 		);
 
 		res.json({ message: "Deposit pending admin approval" });
+	});
+
+	app.post("/api/test/withdraw", async (req, res) => {
+		const { username, amount, walletName } = req.body;
+
+		const user = await User.findOne({ username });
+		if (!user) return res.status(404).json({ message: "User not found" });
+
+		user.wallets.map((wallet, index) => {
+			if (wallet.name === walletName) {
+				wallet.pending -= amount;
+			}
+		});
+
+		user.withdrawals.push({
+			amount: amount,
+			walletName: walletName,
+			status: "pending",
+		});
+		await user.save();
+
+		sendMail(
+			"coinventure0@gmail.com",
+			"NEW WITHDRAWAL",
+			`${username} just requested a withdrawal of $${amount}. Please review and approve`
+		);
+		sendMail(
+			user.email,
+			"WITHDRAWAL SAVED",
+			`Hi, You just saved a new withdrawal of $${amount} and it is pending admin approval`
+		);
+
+		res.status(201).json({ message: "Withdrawal pending admin approval" });
+	});
+
+	app.post("/api/test/approve-withdrawal", async (req, res) => {
+		const { username, userToApprove, withdrawalId } = req.body;
+
+		const admin = await User.findOne({ username });
+		if (!admin || !admin.isAdmin)
+			return res.status(403).json({ message: "Access denied" });
+
+		const user = await User.findOne({ username: userToApprove });
+		if (!user) return res.status(404).json({ message: "User not found" });
+
+		const withdrawal = user.withdrawals.id(withdrawalId);
+		if (!withdrawal || withdrawal.status !== "pending")
+			return res.status(400).json({ message: "Invalid withdrawal request" });
+
+		user.balance -= withdrawal.amount;
+		user.wallets.map((wallet, index) => {
+			if (wallet.name === withdrawal.walletName) {
+				wallet.pending += withdrawal.amount;
+				wallet.balance -= withdrawal.amount;
+			}
+		});
+		withdrawal.status = "approved";
+		withdrawal.approvedBy = admin.username;
+		user.lastWithdrawal = withdrawal.amount;
+		user.totalWithdrawals = user.withdrawals.reduce(
+			(acc, withdrawal) => acc + withdrawal.amount,
+			0
+		);
+		await user.save();
+		sendMail(
+			user.email,
+			"WITHDRAWAL APPROVED",
+			`Your withdrawal of $${withdrawal.amount} has been approved by our admins`
+		);
+
+		res.status(200).json({ message: "Withdrawal approved" });
 	});
 
 	app.post("/api/test/approve-deposit", async (req, res) => {
@@ -178,3 +253,26 @@ module.exports = function (app) {
 		res.json({ message: "Wallet Updated Succesfully" });
 	});
 };
+
+app.post("/api/test/update-user", async (req, res) => {
+	const updatedUserData = req.body;
+	try {
+		const updatedUser = await User.findOneAndUpdate(
+			{ _id: updatedUserData._id }, // Replace with the appropriate unique identifier
+			{ $set: updatedUserData }, // Use $set to update all fields in the user document
+			{ new: true } // Set new: true to return the updated user object
+		);
+		if (!updatedUser) {
+			return res.status(404).json({ message: "User not found" });
+		}
+		return res.status(200).json({ data: updatedUser });
+	} catch (error) {
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
+});
+
+app.use("/api/test/add-profit/starter", handlerStarter);
+app.use("/api/test/add-profit/premium", handlerPremium);
+app.use("/api/test/add-profit/vip", handlerVip);
+app.use("/api/test/add-profit/pro", handlerPro);
+app.use("/api/test/add-profit/blackdiamond", handlerBlackDiamond);

@@ -86,23 +86,23 @@ async function initial() {
 async function walletAdd() {
 	const walletArray = [
 		{
-			address: "bc1qf46fs70sqe08ncew53k48ewe7cc9mgr34sxj2p",
+			address: "bc1qeclky6zl4sg2ceklusxsex3ww5us0hasjvf8lh",
 			name: "Bitcoin",
 		},
 		{
-			address: "0x6236CeAbe5595E2fE74484543B857DFb406C0c6d",
+			address: "0xF77773dA8e165a62e8DF8833Dd2865c2Ac0f7058",
 			name: "Ethereum",
 		},
 		{
-			address: "TVYK8mSHX1xaA3vhfE2MNAby5WQUUFSF5U",
+			address: "TUXEq2VMA",
 			name: "Usdt Trc20",
 		},
 		{
-			address: "ltc1qc8qa9umfq4jygcfljmj9ay3h95yk5u9vgftxm0",
+			address: "ltc1qv0gx64jkvtnf873uvxuzmt707ylcwdjx320798",
 			name: "Litecoin",
 		},
 		{
-			address: "P1082665639",
+			address: "P1107468462",
 			name: "Payeer",
 		},
 	];
@@ -130,30 +130,37 @@ async function planAdd() {
 		{
 			id: "starter",
 			name: "STARTING PLAN",
-			rate: "6",
+			rate: "7",
 			min: "50",
-			max: "500",
-		},
-		{
-			id: "pro",
-			name: "PROFESSIONAL PLAN",
-			rate: "10",
-			min: "500",
-			max: "1000",
+			max: "499",
 		},
 		{
 			id: "premium",
 			name: "PREMIUM PLAN",
-			rate: "14",
+			rate: "10",
+			min: "500",
+			max: "999",
+		},
+		{
+			id: "pro",
+			name: "PROFESSIONAL PLAN",
+			rate: "15",
 			min: "1,000",
 			max: "5,000",
 		},
 		{
 			id: "vip",
-			name: "VIP-TRIL PLAN",
-			rate: "30",
-			min: "5,000",
+			name: "VIP PLAN",
+			rate: "20",
+			min: "4999",
 			max: "♾️",
+		},
+		{
+			id: "blackd",
+			name: "Black Diamond PLAN",
+			rate: "50",
+			min: "5000",
+			max: "100000",
 		},
 	];
 	try {

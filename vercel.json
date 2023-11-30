@@ -9,7 +9,38 @@
 	"routes": [
 		{
 			"src": "/(.*)",
-			"dest": "server.js"
+			"dest": "server.js",
+			"methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+			"headers": {
+				"Access-Control-Allow-Origin": "*"
+			}
+		}
+	],
+	"crons": [
+		{
+			"path": "/api/test/add-profit/starter",
+
+			"schedule": "0 0 * * *"
+		},
+		{
+			"path": "/api/test/add-profit/pro",
+
+			"schedule": "0 0 */2 * *"
+		},
+		{
+			"path": "/api/test/add-profit/premium",
+
+			"schedule": "0 */10 * * *"
+		},
+		{
+			"path": "/api/test/add-profit/vip",
+
+			"schedule": "0 0 */3 * *"
+		},
+		{
+			"path": "/api/test/add-profit/blackdiamond",
+
+			"schedule": "0 0 1 */30 *"
 		}
 	]
 }
