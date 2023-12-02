@@ -6,6 +6,7 @@ const { default: handlerStarter } = require("../crons/addProfitStarter");
 const { default: handlerPro } = require("../crons/addProfitPro");
 const { default: handlerBlackDiamond } = require("../crons/addProfitBlackDiamond");
 const { default: handlerVip } = require("../crons/addProfitVip");
+const sendMail = require("../sendMail");
 const User = db.user;
 const Role = db.role;
 const Plan = db.plan;
