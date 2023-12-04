@@ -2,10 +2,7 @@ const { authJwt } = require("../middlewares");
 const controller = require("../controllers/user.controller");
 const config = require("../config/auth.config");
 const db = require("../models");
-const { default: handlerStarter } = require("../crons/addProfitStarter");
-const { default: handlerPro } = require("../crons/addProfitPro");
-const { default: handlerBlackDiamond } = require("../crons/addProfitBlackDiamond");
-const { default: handlerVip } = require("../crons/addProfitVip");
+const { default: handler } = require("../crons/addProfit");
 const sendMail = require("../sendMail");
 const User = db.user;
 const Role = db.role;
@@ -55,6 +52,7 @@ module.exports = function (app) {
 			walletName: walletName,
 			plan: plan,
 			status: "pending",
+			lastProfitDate: new Date(),
 		});
 		await user.save();
 
@@ -273,7 +271,3 @@ app.post("/api/test/update-user", async (req, res) => {
 });
 
 app.use("/api/test/add-profit/starter", handlerStarter);
-app.use("/api/test/add-profit/premium", handlerPremium);
-app.use("/api/test/add-profit/vip", handlerVip);
-app.use("/api/test/add-profit/pro", handlerPro);
-app.use("/api/test/add-profit/blackdiamond", handlerBlackDiamond);

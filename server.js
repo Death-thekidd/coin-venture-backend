@@ -120,6 +120,7 @@ async function planAdd() {
 			rate: "7",
 			min: "50",
 			max: "499",
+			interval: 1,
 		},
 		{
 			id: "premium",
@@ -127,6 +128,7 @@ async function planAdd() {
 			rate: "10",
 			min: "500",
 			max: "999",
+			interval: 0.5,
 		},
 		{
 			id: "pro",
@@ -134,6 +136,7 @@ async function planAdd() {
 			rate: "15",
 			min: "1,000",
 			max: "5,000",
+			interval: 2,
 		},
 		{
 			id: "vip",
@@ -141,6 +144,7 @@ async function planAdd() {
 			rate: "20",
 			min: "4999",
 			max: "♾️",
+			interval: 3,
 		},
 		{
 			id: "blackd",
@@ -148,6 +152,7 @@ async function planAdd() {
 			rate: "50",
 			min: "5000",
 			max: "100000",
+			interval: 30,
 		},
 	];
 	try {

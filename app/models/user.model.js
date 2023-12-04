@@ -18,6 +18,7 @@ const User = mongoose.model(
 				status: String,
 				walletName: String,
 				approvedBy: String,
+				lastProfitDate: Date,
 			},
 		],
 		earnings: [
