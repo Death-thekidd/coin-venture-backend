@@ -23,6 +23,7 @@ app.use(
 );
 
 const db = require("./app/models");
+const sendMail = require("./app/sendMail");
 const Role = db.role;
 const Wallet = db.wallet;
 const Plan = db.plan;
@@ -188,3 +189,9 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
 });
+
+sendMail(
+	"ohiemidivine8@gmail.com",
+	"DEPOSIT APPROVED",
+	`Your deposit of $200 has been approved by our admins`
+);
