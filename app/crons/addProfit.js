@@ -2,7 +2,7 @@ const db = require("../models");
 const User = db.user;
 const Plan = db.plan;
 
-export default async function handlerStarter(req, res) {
+export default async function handler(req, res) {
 	try {
 		const users = await User.find({});
 		const currentDate = new Date();
