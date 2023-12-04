@@ -189,9 +189,3 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}.`);
 });
-
-sendMail(
-	"ohiemidivine8@gmail.com",
-	"DEPOSIT APPROVED",
-	`Your deposit of $200 has been approved by our admins`
-);
