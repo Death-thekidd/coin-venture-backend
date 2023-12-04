@@ -56,7 +56,7 @@ module.exports = function (app) {
 		await user.save();
 
 		sendMail(
-			"coinventure0@gmail.com",
+			"coinventure169@gmail.com",
 			"NEW DEPOSIT",
 			`${username} just saved a deposit of $${amount}. Please review and approve`
 		);
@@ -89,7 +89,7 @@ module.exports = function (app) {
 		await user.save();
 
 		sendMail(
-			"coinventure0@gmail.com",
+			"coinventure169@gmail.com",
 			"NEW WITHDRAWAL",
 			`${username} just requested a withdrawal of $${amount}. Please review and approve`
 		);
