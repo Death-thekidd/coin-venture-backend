@@ -270,4 +270,4 @@ app.post("/api/test/update-user", async (req, res) => {
 	}
 });
 
-app.use("/api/test/add-profit/starter", handlerStarter);
+app.use("/api/test/add-profit/starter", handler);
