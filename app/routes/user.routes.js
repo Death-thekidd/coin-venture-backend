@@ -2,7 +2,6 @@ const { authJwt } = require("../middlewares");
 const controller = require("../controllers/user.controller");
 const config = require("../config/auth.config");
 const db = require("../models");
-const { default: handler } = require("../crons/addProfit");
 const sendMail = require("../sendMail");
 const User = db.user;
 const Role = db.role;
@@ -251,23 +250,70 @@ module.exports = function (app) {
 		});
 		res.json({ message: "Wallet Updated Succesfully" });
 	});
-};
 
-app.post("/api/test/update-user", async (req, res) => {
-	const updatedUserData = req.body;
-	try {
-		const updatedUser = await User.findOneAndUpdate(
-			{ _id: updatedUserData._id }, // Replace with the appropriate unique identifier
-			{ $set: updatedUserData }, // Use $set to update all fields in the user document
-			{ new: true } // Set new: true to return the updated user object
-		);
-		if (!updatedUser) {
-			return res.status(404).json({ message: "User not found" });
+	app.post("/api/test/update-user", async (req, res) => {
+		const updatedUserData = req.body;
+		try {
+			const updatedUser = await User.findOneAndUpdate(
+				{ _id: updatedUserData._id }, // Replace with the appropriate unique identifier
+				{ $set: updatedUserData }, // Use $set to update all fields in the user document
+				{ new: true } // Set new: true to return the updated user object
+			);
+			if (!updatedUser) {
+				return res.status(404).json({ message: "User not found" });
+			}
+			return res.status(200).json({ data: updatedUser });
+		} catch (error) {
+			return res.status(500).json({ message: "Internal Server Error" });
 		}
-		return res.status(200).json({ data: updatedUser });
-	} catch (error) {
-		return res.status(500).json({ message: "Internal Server Error" });
-	}
-});
+	});
 
-app.use("/api/test/add-profit/starter", handler);
+	app.post("/api/test/add-profit", async (req, res) => {
+		try {
+			const users = await User.find({});
+			const currentDate = new Date();
+
+			users?.forEach(async (user) => {
+				await Promise.all(
+					user?.deposits?.map(async (deposit) => {
+						if (
+							deposit?.status === "approved" &&
+							deposit?.plan &&
+							deposit?.lastProfitDate <= currentDate // Check if last profit date is less than or equal to current date
+						) {
+							const plan = await Plan.findOne({ id: deposit.plan });
+
+							// Calculate the time difference in milliseconds
+							const timeDifference =
+								currentDate.getTime() - deposit.createdDate.getTime();
+
+							// Calculate the number of days passed since the deposit was created
+							const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24));
+
+							if (daysPassed >= plan?.interval) {
+								console.log("Adding profit for deposit:", deposit._id);
+								const profit = (Number(plan?.rate) / 100) * Number(deposit?.amount);
+								user.balance += profit;
+
+								user?.wallets?.map((wallet) => {
+									if (wallet?.name === deposit?.walletName && wallet?.id === "starter") {
+										wallet.available += profit;
+									}
+								});
+
+								deposit.lastProfitDate = currentDate; // Update last profit date to current date
+								await user.save();
+							}
+						}
+					})
+				);
+			});
+
+			console.log("Yea");
+			res.status(200).json({ message: "Job executed" });
+		} catch (error) {
+			console.log(error);
+			return res.status(500).json({ message: "Internal Server Error" });
+		}
+	});
+};
