@@ -8,7 +8,8 @@ const Plan = mongoose.model(
 		rate: String,
 		min: String,
 		max: String,
-		interval: Number,
+		interval: String,
+		duration: Number,
 	})
 );
 
