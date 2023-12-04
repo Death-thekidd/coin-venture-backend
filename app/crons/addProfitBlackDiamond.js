@@ -2,7 +2,7 @@ const db = require("../models");
 const User = db.user;
 const Plan = db.plan;
 
-export default async function handlerBlackDiamond(req, res) {
+async function handlerBlackDiamond(req, res) {
 	try {
 		const users = await User.find({});
 		users?.map((user) => {
@@ -28,3 +28,5 @@ export default async function handlerBlackDiamond(req, res) {
 	console.log("Yea");
 	res.status(200).json({ message: "Job executed" });
 }
+
+module.exports = handlerBlackDiamond;
