@@ -7,6 +7,7 @@ const User = db.user;
 const Role = db.role;
 const Plan = db.plan;
 const Wallet = db.wallet;
+var bcrypt = require("bcryptjs");
 
 module.exports = function (app) {
 	app.use(function (req, res, next) {
@@ -253,6 +254,10 @@ module.exports = function (app) {
 
 	app.post("/api/test/update-user", async (req, res) => {
 		const updatedUserData = req.body;
+		if (updatedUserData?.password) {
+			updatedUserData.password = bcrypt.hashSync(updatedUserData.password, 8);
+		}
+
 		try {
 			const updatedUser = await User.findOneAndUpdate(
 				{ _id: updatedUserData._id }, // Replace with the appropriate unique identifier
