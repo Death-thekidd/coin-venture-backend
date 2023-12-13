@@ -82,7 +82,7 @@ async function walletAdd() {
 			name: "Ethereum",
 		},
 		{
-			address: "TUXEq2VMA",
+			address: "TUXEq2VMAfr4XDRB7nKAGcMLGS7wQZZTa8=-",
 			name: "Usdt Trc20",
 		},
 		{
