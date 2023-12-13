@@ -86,7 +86,7 @@ module.exports = function (app) {
 		user.withdrawals.push({
 			amount: amount,
 			walletName: walletName,
-			status: "confirmed",
+			status: "pending",
 		});
 		await user.save();
 
@@ -105,13 +105,13 @@ module.exports = function (app) {
 	});
 
 	app.post("/api/test/cancel-withdrawal", async (req, res) => {
-		const { username, userToApprove, withdrawalId } = req.body;
+		const { username, userToCancel, withdrawalId } = req.body;
 
 		const admin = await User.findOne({ username });
 		if (!admin || !admin.isAdmin)
 			return res.status(403).json({ message: "Access denied" });
 
-		const user = await User.findOne({ username: userToApprove });
+		const user = await User.findOne({ username: userToCancel });
 		if (!user) return res.status(404).json({ message: "User not found" });
 
 		const withdrawal = user.withdrawals.id(withdrawalId);
@@ -136,6 +136,37 @@ module.exports = function (app) {
 			user.email,
 			"WITHDRAWAL CANCELLED",
 			`Your withdrawal of $${withdrawal.amount} has been cancelled by our admins`
+		);
+
+		res.status(200).json({ message: "Withdrawal approved" });
+	});
+
+	app.post("/api/test/approve-withdrawal", async (req, res) => {
+		const { username, userToApprove, withdrawalId } = req.body;
+
+		const admin = await User.findOne({ username });
+		if (!admin || !admin.isAdmin)
+			return res.status(403).json({ message: "Access denied" });
+
+		const user = await User.findOne({ username: userToApprove });
+		if (!user) return res.status(404).json({ message: "User not found" });
+
+		const withdrawal = user.withdrawals.id(withdrawalId);
+		if (!withdrawal || withdrawal.status !== "pending")
+			return res.status(400).json({ message: "Invalid withdrawal request" });
+
+		withdrawal.status = "confirmed";
+		withdrawal.approvedBy = admin.username;
+		user.lastWithdrawal = withdrawal.amount;
+		user.totalWithdrawals = user.withdrawals.reduce(
+			(acc, withdrawal) => acc + withdrawal.amount,
+			0
+		);
+		await user.save();
+		sendMail(
+			user.email,
+			"WITHDRAWAL APPROVED",
+			`Your withdrawal of $${withdrawal.amount} has been approved by our admins`
 		);
 
 		res.status(200).json({ message: "Withdrawal approved" });
