@@ -302,7 +302,6 @@ module.exports = function (app) {
 
 							// Calculate the number of days passed since the deposit was created
 							const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24));
-							x;
 							if (user.username === "Shirpravç") {
 								console.log("second check", daysPassed >= plan?.duration);
 							}
