@@ -76,16 +76,17 @@ module.exports = function (app) {
 		const user = await User.findOne({ username });
 		if (!user) return res.status(404).json({ message: "User not found" });
 
+		user.balance -= amount;
 		user.wallets.map((wallet, index) => {
 			if (wallet.name === walletName) {
-				wallet.pending -= amount;
+				wallet.balance -= amount;
 			}
 		});
 
 		user.withdrawals.push({
 			amount: amount,
 			walletName: walletName,
-			status: "pending",
+			status: "confirmed",
 		});
 		await user.save();
 
@@ -103,7 +104,7 @@ module.exports = function (app) {
 		res.status(201).json({ message: "Withdrawal pending admin approval" });
 	});
 
-	app.post("/api/test/approve-withdrawal", async (req, res) => {
+	app.post("/api/test/cancel-withdrawal", async (req, res) => {
 		const { username, userToApprove, withdrawalId } = req.body;
 
 		const admin = await User.findOne({ username });
@@ -114,17 +115,16 @@ module.exports = function (app) {
 		if (!user) return res.status(404).json({ message: "User not found" });
 
 		const withdrawal = user.withdrawals.id(withdrawalId);
-		if (!withdrawal || withdrawal.status !== "pending")
+		if (!withdrawal || withdrawal.status !== "confirmed")
 			return res.status(400).json({ message: "Invalid withdrawal request" });
 
-		user.balance -= withdrawal.amount;
+		user.balance += withdrawal.amount;
 		user.wallets.map((wallet, index) => {
 			if (wallet.name === withdrawal.walletName) {
-				wallet.pending += withdrawal.amount;
-				wallet.balance -= withdrawal.amount;
+				wallet.balance += withdrawal.amount;
 			}
 		});
-		withdrawal.status = "approved";
+		withdrawal.status = "cancelled";
 		withdrawal.approvedBy = admin.username;
 		user.lastWithdrawal = withdrawal.amount;
 		user.totalWithdrawals = user.withdrawals.reduce(
@@ -134,8 +134,8 @@ module.exports = function (app) {
 		await user.save();
 		sendMail(
 			user.email,
-			"WITHDRAWAL APPROVED",
-			`Your withdrawal of $${withdrawal.amount} has been approved by our admins`
+			"WITHDRAWAL CANCELLED",
+			`Your withdrawal of $${withdrawal.amount} has been cancelled by our admins`
 		);
 
 		res.status(200).json({ message: "Withdrawal approved" });
