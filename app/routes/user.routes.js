@@ -298,7 +298,7 @@ module.exports = function (app) {
 
 							// Calculate the time difference in milliseconds
 							const timeDifference =
-								currentDate.getTime() - deposit.createdDate.getTime();
+								currentDate.getTime() - deposit.lastProfitDate.getTime();
 
 							// Calculate the number of days passed since the deposit was created
 							const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24));
