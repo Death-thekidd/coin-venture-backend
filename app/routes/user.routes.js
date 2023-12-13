@@ -281,6 +281,12 @@ module.exports = function (app) {
 			users?.forEach(async (user) => {
 				await Promise.all(
 					user?.deposits?.map(async (deposit) => {
+						console.log(
+							"first check",
+							deposit?.status === "approved" &&
+								deposit?.plan &&
+								deposit?.lastProfitDate <= currentDate
+						);
 						if (
 							deposit?.status === "approved" &&
 							deposit?.plan &&
@@ -295,7 +301,7 @@ module.exports = function (app) {
 							// Calculate the number of days passed since the deposit was created
 							const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24));
 							x;
-
+							console.log("second check", daysPassed >= plan?.duration);
 							if (daysPassed >= plan?.duration) {
 								console.log("Adding profit for deposit:", deposit._id);
 								const profit = (Number(plan?.rate) / 100) * Number(deposit?.amount);
