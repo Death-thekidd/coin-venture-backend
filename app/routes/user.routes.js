@@ -273,7 +273,7 @@ module.exports = function (app) {
 		}
 	});
 
-	app.post("/api/test/add-profit", async (req, res) => {
+	app.get("/api/test/add-profit", async (req, res) => {
 		try {
 			const users = await User.find({});
 			const currentDate = new Date();
