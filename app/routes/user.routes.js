@@ -294,8 +294,9 @@ module.exports = function (app) {
 
 							// Calculate the number of days passed since the deposit was created
 							const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24));
+							x;
 
-							if (daysPassed >= plan?.interval) {
+							if (daysPassed >= plan?.duration) {
 								console.log("Adding profit for deposit:", deposit._id);
 								const profit = (Number(plan?.rate) / 100) * Number(deposit?.amount);
 								user.balance += profit;
