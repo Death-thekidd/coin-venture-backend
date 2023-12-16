@@ -115,7 +115,7 @@ module.exports = function (app) {
 		if (!user) return res.status(404).json({ message: "User not found" });
 
 		const withdrawal = user.withdrawals.id(withdrawalId);
-		if (!withdrawal || withdrawal.status !== "confirmed")
+		if (!withdrawal || withdrawal.status === "cancelled")
 			return res.status(400).json({ message: "Invalid withdrawal request" });
 
 		user.balance += withdrawal.amount;
@@ -143,13 +143,12 @@ module.exports = function (app) {
 
 	app.post("/api/test/approve-withdrawal", async (req, res) => {
 		const { username, userToApprove, withdrawalId } = req.body;
-
 		const admin = await User.findOne({ username });
 		if (!admin || !admin.isAdmin)
 			return res.status(403).json({ message: "Access denied" });
 
 		const user = await User.findOne({ username: userToApprove });
-		if (!user) return res.status(404).json({ message: "User not found" });
+		c;
 
 		const withdrawal = user.withdrawals.id(withdrawalId);
 		if (!withdrawal || withdrawal.status !== "pending")
