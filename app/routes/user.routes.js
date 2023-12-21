@@ -308,53 +308,36 @@ module.exports = function (app) {
 			const users = await User.find({});
 			const currentDate = new Date();
 
-			users?.forEach(async (user) => {
-				await Promise.all(
-					user?.deposits?.map(async (deposit) => {
-						if (user.username === "mi123") {
-							console.log(
-								"first check",
-								deposit?.status === "approved" &&
-									deposit?.plan &&
-									deposit?.lastProfitDate <= currentDate
-							);
+			for (const user of users) {
+				for (const deposit of user?.deposits || []) {
+					if (
+						deposit?.status === "approved" &&
+						deposit?.plan &&
+						deposit?.lastProfitDate <= currentDate
+					) {
+						const plan = await Plan.findOne({ id: deposit.plan });
+
+						const timeDifference =
+							currentDate.getTime() - deposit.lastProfitDate.getTime();
+
+						const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24));
+
+						if (daysPassed >= plan?.duration) {
+							const profit = (Number(plan?.rate) / 100) * Number(deposit?.amount);
+							user.balance += profit;
+
+							user?.wallets?.forEach((wallet) => {
+								if (wallet?.name === deposit?.walletName && wallet?.id === "starter") {
+									wallet.available += profit;
+								}
+							});
+
+							deposit.lastProfitDate = currentDate;
 						}
-						if (
-							deposit?.status === "approved" &&
-							deposit?.plan &&
-							deposit?.lastProfitDate <= currentDate
-						) {
-							const plan = await Plan.findOne({ id: deposit.plan });
-
-							// Calculate the time difference in milliseconds
-							const timeDifference =
-								currentDate.getTime() - deposit.lastProfitDate.getTime();
-
-							// Calculate the number of days passed since the deposit was created
-							const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24));
-							console.log(daysPassed);
-							if (user.username === "mi123") {
-								console.log("second check", daysPassed >= plan?.duration);
-								console.log(daysPassed, plan?.duration);
-							}
-							if (daysPassed >= plan?.duration) {
-								console.log("Adding profit for deposit:", deposit._id);
-								const profit = (Number(plan?.rate) / 100) * Number(deposit?.amount);
-								user.balance += profit;
-
-								user?.wallets?.map((wallet) => {
-									if (wallet?.name === deposit?.walletName && wallet?.id === "starter") {
-										wallet.available += profit;
-									}
-								});
-
-								deposit.lastProfitDate = currentDate; // Update last profit date to current date
-								await user.save();
-							}
-						}
-					})
-				);
-			});
+					}
+				}
+				await user.save(); // Save each user separately after processing deposits
+			}
 
 			console.log("Yea");
 			res.status(200).json({ message: "Job executed" });
