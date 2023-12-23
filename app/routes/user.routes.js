@@ -148,7 +148,6 @@ module.exports = function (app) {
 			return res.status(403).json({ message: "Access denied" });
 
 		const user = await User.findOne({ username: userToApprove });
-		c;
 
 		const withdrawal = user.withdrawals.id(withdrawalId);
 		if (!withdrawal || withdrawal.status !== "pending")
