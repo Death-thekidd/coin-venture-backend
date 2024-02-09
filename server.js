@@ -40,7 +40,6 @@ db.mongoose
 	.then(() => {
 		console.log("Successfully connect to MongoDB.");
 		initial();
-		walletAdd();
 		planAdd();
 	})
 	.catch((err) => {
