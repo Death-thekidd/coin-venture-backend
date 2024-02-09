@@ -101,11 +101,11 @@ async function walletAdd() {
 			if (!existingWallet) {
 				await new Wallet(wallet).save();
 				console.log(`added ${name} to wallets collection`);
+				existingWallet.address = address;
+				existingWallet.save();
 				return;
 			}
 
-			existingWallet.address = address;
-			existingWallet.save();
 			console.log(`updated wallets`);
 			return;
 		});

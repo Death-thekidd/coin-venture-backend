@@ -191,7 +191,10 @@ module.exports = function (app) {
 				wallet.balance += deposit.amount;
 			}
 		});
-		user.totalDeposits += deposit.amount;
+		user.totalDeposits = user.deleteOne.reduce(
+			(acc, deposit) => acc + deposit.amount,
+			0
+		);
 		user.activeDeposit = deposit.amount;
 		deposit.status = "approved";
 		deposit.approvedBy = admin.username;

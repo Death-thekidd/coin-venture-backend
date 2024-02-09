@@ -12,6 +12,8 @@ const User = mongoose.model(
 		activeDeposit: Number,
 		totalEarnings: Number,
 		totalDeposits: Number,
+		lastWithdrawal: Number,
+		totalWithdrawals: Number,
 		deposits: [
 			{
 				amount: Number,
